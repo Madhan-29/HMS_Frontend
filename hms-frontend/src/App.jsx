@@ -14,6 +14,7 @@ import ProfileEdit from "./pages/ProfileEdit";
 /* Route Guards */
 import AdminRoute from "./routes/AdminRoute";
 import ProfileGuard from "./routes/ProfileGuard";
+import PrivateRoute from "./routes/PrivateRoute";
 
 export default function App() {
   return (
@@ -25,42 +26,50 @@ export default function App() {
 
         {/* ================= PROFILE SETUP ================= */}
         {/* First login → mandatory */}
-        <Route path="/profile-setup" element={<ProfileSetup />} />
+        <Route path="/profile-setup" element={<PrivateRoute><ProfileSetup /></PrivateRoute>} />
 
         {/* ================= USER PROTECTED ROUTES ================= */}
         <Route
           path="/dashboard"
           element={
-            <ProfileGuard>
-              <Dashboard />
-            </ProfileGuard>
+            <PrivateRoute>
+              <ProfileGuard>
+                <Dashboard />
+              </ProfileGuard>
+            </PrivateRoute>
           }
         />
 
         <Route
           path="/rooms"
           element={
-            <ProfileGuard>
-              <Rooms />
-            </ProfileGuard>
+            <PrivateRoute>
+              <ProfileGuard>
+                <Rooms />
+              </ProfileGuard>
+            </PrivateRoute>
           }
         />
 
         <Route
           path="/attendance"
           element={
-            <ProfileGuard>
-              <Attendance />
-            </ProfileGuard>
+            <PrivateRoute>
+              <ProfileGuard>
+                <Attendance />
+              </ProfileGuard>
+            </PrivateRoute>
           }
         />
 
         <Route
           path="/profile-edit"
           element={
-            <ProfileGuard>
-              <ProfileEdit />
-            </ProfileGuard>
+            <PrivateRoute>
+              <ProfileGuard>
+                <ProfileEdit />
+              </ProfileGuard>
+            </PrivateRoute>
           }
         />
 
@@ -68,18 +77,22 @@ export default function App() {
         <Route
           path="/allocations"
           element={
-            <AdminRoute>
-              <Allocations />
-            </AdminRoute>
+            <PrivateRoute>
+              <AdminRoute>
+                <Allocations />
+              </AdminRoute>
+            </PrivateRoute>
           }
         />
 
         <Route
           path="/admin-attendance"
           element={
-            <AdminRoute>
-              <AdminAttendance />
-            </AdminRoute>
+            <PrivateRoute>
+              <AdminRoute>
+                <AdminAttendance />
+              </AdminRoute>
+            </PrivateRoute>
           }
         />
       </Routes>
