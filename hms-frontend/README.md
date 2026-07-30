@@ -20,6 +20,10 @@ A modern, responsive hostel management dashboard built with **React 19** + **Vit
 - 🏠 **Room Management** — View room details, availability, and capacity
 - 🛏️ **Room Allocation** *(Admin)* — Allocate & vacate rooms for students
 - 📌 **Attendance Tracking** — Students mark attendance; admins view attendance history
+- 🛫 **Leave & Gate Pass** — Request outpasses and track approvals
+- 👥 **Visitor Management** — Register visitors and track their check-in/out status
+- 📢 **Notice Board & Complaints** — Internal communication and issue tracking
+- 📊 **Excel Reporting** *(Admin)* — Download date-filtered records for attendance, visitors, and leaves in Excel format
 - 👤 **Profile Management** — Mandatory profile setup on first login + editable profiles
 - 🌑 **Dark Glassmorphism UI** — Beautiful frosted-glass cards with gradient backgrounds
 - ⚡ **Blazing Fast** — Powered by Vite for instant HMR and fast builds
@@ -71,6 +75,7 @@ src/
 | **HTTP Client**| Axios                   |
 | **Auth**       | JWT (jwt-decode)        |
 | **Styling**    | CSS (Glassmorphism)     |
+| **Excel Export**| xlsx (SheetJS)          |
 | **Backend**    | Spring Boot *(separate repo)* |
 
 ---
@@ -109,6 +114,9 @@ sequenceDiagram
 | View Rooms         | ✅      | ✅       |
 | Mark Attendance    | ✅      | ✅       |
 | Edit Profile       | ✅      | ✅       |
+| Leave & Visitor    | ✅      | ✅       |
+| Notice & Complaints| ✅      | ✅       |
+| Excel Export       | ❌      | ✅       |
 | Room Allocation    | ❌      | ✅       |
 | Admin Attendance   | ❌      | ✅       |
 
@@ -174,8 +182,12 @@ const api = axios.create({
 | **Dashboard** | Role-aware hub with action cards for navigation |
 | **Rooms** | Browse all hostel rooms with availability status |
 | **Attendance** | Students mark daily attendance |
+| **Leave** | Manage outpasses and gate passes |
+| **Visitor** | Register and track visitors |
+| **Notice Board** | View and post hostel announcements |
+| **Complaints** | Submit and track maintenance issues |
 | **Allocations** | Admin panel for room allocation & vacation |
-| **Admin Attendance** | Admin view of all student attendance records |
+| **Admin Attendance** | Admin view of all student attendance records with Excel export |
 | **Profile Setup** | Mandatory first-login profile completion |
 | **Profile Edit** | Update existing profile information |
 
