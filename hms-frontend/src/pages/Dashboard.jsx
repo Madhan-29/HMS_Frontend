@@ -20,69 +20,101 @@ export default function Dashboard() {
   };
 
   return (
-    <div style={styles.page}>
-      <div style={styles.card}>
+    <div className="container">
+      <div className="card" style={{ maxWidth: "1000px" }}>
         {/* 🔝 TOP RIGHT ACTIONS */}
-        <div style={styles.topActions}>
+        <div style={{ position: "absolute", top: "25px", right: "25px", display: "flex", gap: "12px" }}>
           <button
-            style={styles.profileBtn}
+            style={{ padding: "8px 16px", borderRadius: "10px", border: "none", background: "var(--glass-bg)", color: "white", cursor: "pointer", fontWeight: "600", border: "1px solid var(--glass-border)" }}
             onClick={() => nav("/profile-edit")}
           >
             👤 Profile
           </button>
 
-          <button style={styles.logoutBtn} onClick={handleLogout}>
+          <button 
+            style={{ padding: "8px 16px", borderRadius: "10px", border: "none", background: "rgba(239, 68, 68, 0.2)", color: "#fca5a5", cursor: "pointer", fontWeight: "600", border: "1px solid rgba(239,68,68,0.3)" }}
+            onClick={handleLogout}>
             🚪 Logout
           </button>
         </div>
 
-        <h1 style={styles.title}>🏠 Hostel Management System</h1>
-        <p style={styles.subTitle}>Dashboard</p>
+        <h2 style={{ fontSize: "32px", marginBottom: "5px" }}>🏠 Hostel Management System</h2>
 
         {/* ROLE BADGE */}
-        <div style={styles.roleBox}>
+        <div style={{ display: "flex", justifyContent: "center", gap: "12px", alignItems: "center", marginBottom: "35px" }}>
           <span
             style={{
-              ...styles.badge,
-              background: isAdmin() ? "#ff6b6b" : "#4caf50",
+              padding: "6px 14px",
+              borderRadius: "20px",
+              fontWeight: "700",
+              fontSize: "12px",
+              letterSpacing: "1px",
+              background: isAdmin() ? "rgba(245, 158, 11, 0.2)" : "rgba(16, 185, 129, 0.2)",
+              color: isAdmin() ? "#fbbf24" : "#34d399",
+              border: `1px solid ${isAdmin() ? "rgba(245, 158, 11, 0.4)" : "rgba(16, 185, 129, 0.4)"}`
             }}
           >
             {isAdmin() ? "ADMIN" : "USER"}
           </span>
-          <span style={{ color: "lightgray", fontSize: "14px" }}>
-            ✅ You are logged in
-          </span>
         </div>
 
         {/* ACTION GRID */}
-        <div style={styles.grid}>
-          <button style={styles.actionBtn} onClick={() => nav("/rooms")}>
-            🏠 View Rooms
-            <p style={styles.desc}>Check hostel room availability</p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "20px" }}>
+          <button className="actionCard" onClick={() => nav("/rooms")}>
+            <span className="cardTitle">🏠 View Rooms</span>
+            <span className="cardDesc">Check hostel room availability and details</span>
           </button>
 
-          <button style={styles.actionBtn} onClick={() => nav("/attendance")}>
-            📌 Attendance
-            <p style={styles.desc}>Mark & view your attendance</p>
+          <button className="actionCard" onClick={() => nav("/attendance")}>
+            <span className="cardTitle">📌 Attendance</span>
+            <span className="cardDesc">Mark & view your daily attendance records</span>
+          </button>
+
+          <button className="actionCard" onClick={() => nav("/complaints")}>
+            <span className="cardTitle">📝 Complaints</span>
+            <span className="cardDesc">Raise or track maintenance and room issues</span>
+          </button>
+
+          <button className="actionCard" onClick={() => nav("/leave")}>
+            <span className="cardTitle">🛫 Leave / Pass</span>
+            <span className="cardDesc">Apply for leave or a temporary gate pass</span>
+          </button>
+
+          <button className="actionCard" onClick={() => nav("/visitors")}>
+            <span className="cardTitle">👥 Visitors</span>
+            <span className="cardDesc">Register and keep track of your visitors</span>
+          </button>
+
+          <button className="actionCard" onClick={() => nav("/notices")}>
+            <span className="cardTitle">📢 Notice Board</span>
+            <span className="cardDesc">Read the latest announcements and alerts</span>
           </button>
 
           {/* ADMIN ONLY */}
           {isAdmin() && (
             <>
               <button
-                style={styles.adminBtn}
+                className="adminCard"
                 onClick={() => nav("/allocations")}
               >
-                🛏 Room Allocation
-                <p style={styles.desc}>Allocate & vacate rooms</p>
+                <span className="cardTitle">🛏 Room Allocation</span>
+                <span className="cardDesc">Admin: Allocate & vacate student rooms</span>
               </button>
 
               <button
-                style={styles.adminBtn}
+                className="adminCard"
                 onClick={() => nav("/admin-attendance")}
               >
-                📋 Admin Attendance
-                <p style={styles.desc}>View users attendance history</p>
+                <span className="cardTitle">📋 Admin Attendance</span>
+                <span className="cardDesc">Admin: View overall users attendance history</span>
+              </button>
+
+              <button
+                className="adminCard"
+                onClick={() => nav("/user-management")}
+              >
+                <span className="cardTitle">👥 User Management</span>
+                <span className="cardDesc">Admin: Manage system access and roles</span>
               </button>
             </>
           )}
@@ -91,124 +123,3 @@ export default function Dashboard() {
     </div>
   );
 }
-
-/* ================= STYLES ================= */
-
-const styles = {
-  page: {
-    minHeight: "100vh",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    background: "linear-gradient(135deg, #0f0f0f, #1b1b1b)",
-    padding: "20px",
-  },
-
-  card: {
-    position: "relative",
-    width: "100%",
-    maxWidth: "900px",
-    padding: "35px",
-    borderRadius: "18px",
-    background: "rgba(255,255,255,0.06)",
-    backdropFilter: "blur(10px)",
-    boxShadow: "0px 8px 30px rgba(0,0,0,0.5)",
-    textAlign: "center",
-  },
-
-  topActions: {
-    position: "absolute",
-    top: "20px",
-    right: "20px",
-    display: "flex",
-    gap: "10px",
-  },
-
-  profileBtn: {
-    padding: "10px 18px",
-    borderRadius: "10px",
-    border: "none",
-    cursor: "pointer",
-    background: "#4cafef",
-    color: "white",
-    fontWeight: "700",
-    fontSize: "14px",
-  },
-
-  logoutBtn: {
-    padding: "10px 18px",
-    borderRadius: "10px",
-    border: "none",
-    cursor: "pointer",
-    background: "tomato",
-    color: "white",
-    fontWeight: "700",
-    fontSize: "14px",
-  },
-
-  title: {
-    color: "white",
-    fontSize: "28px",
-    fontWeight: "700",
-    marginBottom: "5px",
-  },
-
-  subTitle: {
-    color: "lightgray",
-    marginBottom: "20px",
-  },
-
-  roleBox: {
-    display: "flex",
-    justifyContent: "center",
-    gap: "12px",
-    alignItems: "center",
-    marginBottom: "30px",
-  },
-
-  badge: {
-    padding: "6px 14px",
-    borderRadius: "20px",
-    fontWeight: "bold",
-    color: "white",
-    fontSize: "13px",
-  },
-
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-    gap: "18px",
-    marginTop: "20px",
-  },
-
-  actionBtn: {
-    padding: "18px",
-    borderRadius: "14px",
-    border: "none",
-    cursor: "pointer",
-    background: "rgba(255,255,255,0.10)",
-    color: "white",
-    fontSize: "16px",
-    fontWeight: "600",
-    textAlign: "left",
-  },
-
-  adminBtn: {
-    padding: "18px",
-    borderRadius: "14px",
-    border: "none",
-    cursor: "pointer",
-    background: "rgba(255, 99, 71, 0.20)",
-    color: "white",
-    fontSize: "16px",
-    fontWeight: "600",
-    textAlign: "left",
-  },
-
-  desc: {
-    fontSize: "13px",
-    marginTop: "5px",
-    fontWeight: "400",
-    color: "lightgray",
-  },
-};

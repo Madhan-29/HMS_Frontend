@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 /* Pages */
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
 import Dashboard from "./pages/Dashboard";
 import Rooms from "./pages/Rooms";
 import Attendance from "./pages/Attendance";
@@ -10,6 +11,11 @@ import Allocations from "./pages/Allocations";
 import AdminAttendance from "./pages/AdminAttendance";
 import ProfileSetup from "./pages/ProfileSetup";
 import ProfileEdit from "./pages/ProfileEdit";
+import Complaints from "./pages/Complaints";
+import Leave from "./pages/Leave";
+import Visitor from "./pages/Visitor";
+import NoticeBoard from "./pages/NoticeBoard";
+import UserManagement from "./pages/UserManagement";
 
 /* Route Guards */
 import AdminRoute from "./routes/AdminRoute";
@@ -23,6 +29,7 @@ export default function App() {
         {/* ================= PUBLIC ROUTES ================= */}
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
 
         {/* ================= PROFILE SETUP ================= */}
         {/* First login → mandatory */}
@@ -73,6 +80,50 @@ export default function App() {
           }
         />
 
+        <Route
+          path="/complaints"
+          element={
+            <PrivateRoute>
+              <ProfileGuard>
+                <Complaints />
+              </ProfileGuard>
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/leave"
+          element={
+            <PrivateRoute>
+              <ProfileGuard>
+                <Leave />
+              </ProfileGuard>
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/visitors"
+          element={
+            <PrivateRoute>
+              <ProfileGuard>
+                <Visitor />
+              </ProfileGuard>
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/notices"
+          element={
+            <PrivateRoute>
+              <ProfileGuard>
+                <NoticeBoard />
+              </ProfileGuard>
+            </PrivateRoute>
+          }
+        />
+
         {/* ================= ADMIN PROTECTED ROUTES ================= */}
         <Route
           path="/allocations"
@@ -91,6 +142,17 @@ export default function App() {
             <PrivateRoute>
               <AdminRoute>
                 <AdminAttendance />
+              </AdminRoute>
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/user-management"
+          element={
+            <PrivateRoute>
+              <AdminRoute>
+                <UserManagement />
               </AdminRoute>
             </PrivateRoute>
           }

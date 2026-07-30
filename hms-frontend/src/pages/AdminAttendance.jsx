@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
 import { Link } from "react-router-dom";
+import * as XLSX from "xlsx";
 
 export default function AdminAttendance() {
   const [users, setUsers] = useState([]);
@@ -9,6 +10,8 @@ export default function AdminAttendance() {
 
   const [filterDate, setFilterDate] = useState(""); 
   const [loading, setLoading] = useState(false);
+  const [exportStartDate, setExportStartDate] = useState("");
+  const [exportEndDate, setExportEndDate] = useState("");
 
   const fetchUsers = async () => {
     try {
@@ -91,99 +94,202 @@ export default function AdminAttendance() {
     if (selectedEmail) fetchAttendance(selectedEmail);
   };
 
+  const handleExportExcel = () => {
+    if (!history || history.length === 0) {
+      alert("No data to export");
+      return;
+    }
+
+    let filtered = history;
+    if (exportStartDate && exportEndDate) {
+      const start = new Date(exportStartDate);
+      const end = new Date(exportEndDate);
+      end.setHours(23, 59, 59, 999);
+      
+      filtered = history.filter((a) => {
+        const itemDate = new Date(a.date);
+        return itemDate >= start && itemDate <= end;
+      });
+    } else if (exportStartDate || exportEndDate) {
+      alert("Please select both start and end dates for the export range.");
+      return;
+    }
+
+    if (filtered.length === 0) {
+      alert("No records found in the selected date range.");
+      return;
+    }
+
+    const exportData = filtered.map((a) => ({
+      "User Email": selectedEmail,
+      "Date": a.date,
+      "Status": a.present ? "Present" : "Absent",
+      "Marked At": a.markedAt
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance");
+    XLSX.writeFile(workbook, `Attendance_${selectedEmail || 'All'}.xlsx`);
+  };
+
   return (
-    <div style={{ padding: "30px" }}>
-      <h2 style={{ textAlign: "center" }}>📋 User Attendance History (Admin)</h2>
-
-      <div style={{ textAlign: "center", marginBottom: "15px" }}>
-        <Link to="/dashboard" style={{ color: "#4cafef" }}>
-          ⬅ Back to Dashboard
-        </Link>
-      </div>
-
-      {}
-      <div
-        style={{
-          maxWidth: "700px",
-          margin: "0 auto",
-          display: "flex",
-          gap: "15px",
-          flexWrap: "wrap",
-          justifyContent: "center",
-        }}
-      >
-        {}
-        <select
-          className="inputBox"
-          value={selectedEmail}
-          onChange={handleSelectUser}
-          style={{ flex: "1", minWidth: "250px" }}
-        >
-          <option value="">Select User</option>
-          {users.map((u) => (
-            <option key={u.id} value={u.email}>
-              {u.email}
-            </option>
-          ))}
-        </select>
-
-        {}
-        <input
-          className="inputBox"
-          type="date"
-          value={filterDate}
-          onChange={handleDateChange}
-          style={{ flex: "1", minWidth: "200px" }}
-        />
-
-        {}
-        <button className="btn" onClick={clearFilters}>
-          Clear Filter
+    <div className="container">
+      <div className="card animate-slide-up" style={{ maxWidth: "1000px" }}>
+        <button style={styles.backBtn} onClick={() => window.history.back()}>
+          ⬅ Back
         </button>
-      </div>
 
-      <h3 style={{ textAlign: "center", marginTop: "25px" }}>
-        Attendance Records
-      </h3>
+        <h2 style={{ textAlign: "center", marginBottom: "20px" }}>📋 User Attendance History (Admin)</h2>
 
-      {loading ? (
-        <p style={{ textAlign: "center" }}>Loading...</p>
-      ) : history.length === 0 ? (
-        <p style={{ textAlign: "center" }}>No attendance found</p>
-      ) : (
-        <div style={{ maxWidth: "900px", margin: "0 auto" }}>
-          <table
-            style={{
-              width: "100%",
-              marginTop: "15px",
-              borderCollapse: "collapse",
-              background: "rgba(255,255,255,0.06)",
-              borderRadius: "10px",
-              overflow: "hidden",
-            }}
+        <div style={styles.filterContainer}>
+          <select
+            className="inputBox"
+            value={selectedEmail}
+            onChange={handleSelectUser}
+            style={{ flex: "1", minWidth: "250px" }}
           >
-            <thead>
-              <tr style={{ background: "rgba(255,255,255,0.12)" }}>
-                <th style={{ padding: "12px" }}>Date</th>
-                <th style={{ padding: "12px" }}>Status</th>
-                <th style={{ padding: "12px" }}>Marked At</th>
-              </tr>
-            </thead>
+            <option value="">Select User</option>
+            {users.map((u) => (
+              <option key={u.id} value={u.email}>
+                {u.email}
+              </option>
+            ))}
+          </select>
 
-            <tbody>
-              {history.map((a) => (
-                <tr key={a.id} style={{ textAlign: "center" }}>
-                  <td style={{ padding: "12px" }}>{a.date}</td>
-                  <td style={{ padding: "12px" }}>
-                    {a.present ? "✅ Present" : "❌ Absent"}
-                  </td>
-                  <td style={{ padding: "12px" }}>{a.markedAt}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <input
+            className="inputBox"
+            type="date"
+            value={filterDate}
+            onChange={handleDateChange}
+            style={{ flex: "1", minWidth: "200px" }}
+          />
+
+          <button className="btn" onClick={clearFilters} style={{ background: "var(--glass-border)", color: "var(--text-main)" }}>
+            Clear Filter
+          </button>
         </div>
-      )}
+
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", marginTop: "25px", flexWrap: "wrap", gap: "10px" }}>
+          <h3 style={{ color: "var(--text-main)", margin: 0 }}>
+            Attendance Records
+          </h3>
+          <div style={{ display: "flex", gap: "8px", alignItems: "center", background: "rgba(0,0,0,0.2)", padding: "8px 12px", borderRadius: "10px", border: "1px solid var(--glass-border)" }}>
+            <span style={{ color: "var(--text-main)", fontSize: "13px" }}>Export Range:</span>
+            <input type="date" style={styles.dateInput} value={exportStartDate} onChange={(e) => setExportStartDate(e.target.value)} />
+            <span style={{ color: "var(--text-muted)", fontSize: "13px" }}>to</span>
+            <input type="date" style={styles.dateInput} value={exportEndDate} onChange={(e) => setExportEndDate(e.target.value)} />
+            <button onClick={handleExportExcel} style={styles.exportBtn}>
+              📥 Export
+            </button>
+          </div>
+        </div>
+
+        {loading ? (
+          <p style={{ textAlign: "center", color: "var(--text-muted)" }}>Loading...</p>
+        ) : history.length === 0 ? (
+          <p style={{ textAlign: "center", color: "var(--text-muted)" }}>No attendance found</p>
+        ) : (
+          <div style={{ maxWidth: "900px", margin: "0 auto", overflowX: "auto" }}>
+            <table style={styles.table}>
+              <thead>
+                <tr style={{ background: "rgba(255,255,255,0.05)" }}>
+                  <th style={styles.th}>Date</th>
+                  <th style={styles.th}>Status</th>
+                  <th style={styles.th}>Marked At</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {history.map((a) => (
+                  <tr key={a.id} style={{ borderBottom: "1px solid var(--glass-border)" }}>
+                    <td style={styles.td}>{a.date}</td>
+                    <td style={styles.td}>
+                      {a.present ? (
+                        <span style={{ color: "var(--success)", fontWeight: "bold" }}>✅ Present</span>
+                      ) : (
+                        <span style={{ color: "var(--danger)", fontWeight: "bold" }}>❌ Absent</span>
+                      )}
+                    </td>
+                    <td style={styles.td}>{a.markedAt}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
+
+const styles = {
+  backBtn: {
+    position: "absolute",
+    top: "25px",
+    left: "25px",
+    padding: "8px 15px",
+    borderRadius: "10px",
+    cursor: "pointer",
+    background: "var(--glass-bg)",
+    border: "1px solid var(--glass-border)",
+    color: "var(--text-main)",
+    transition: "all 0.3s ease",
+  },
+  filterContainer: {
+    maxWidth: "800px",
+    margin: "0 auto",
+    display: "flex",
+    gap: "15px",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    background: "rgba(0,0,0,0.2)",
+    padding: "20px",
+    borderRadius: "16px",
+    border: "1px solid var(--glass-border)",
+    marginBottom: "30px",
+  },
+  table: {
+    width: "100%",
+    borderCollapse: "collapse",
+    background: "rgba(0,0,0,0.2)",
+    borderRadius: "12px",
+    overflow: "hidden",
+    border: "1px solid var(--glass-border)",
+  },
+  th: {
+    padding: "15px",
+    textAlign: "center",
+    color: "var(--text-main)",
+    fontWeight: "bold",
+    borderBottom: "1px solid var(--glass-border)",
+  },
+  td: {
+    padding: "15px",
+    textAlign: "center",
+    color: "var(--text-muted)",
+  },
+  exportBtn: {
+    padding: "6px 12px",
+    borderRadius: "6px",
+    border: "none",
+    background: "var(--success)",
+    color: "white",
+    cursor: "pointer",
+    fontWeight: "bold",
+    display: "flex",
+    alignItems: "center",
+    gap: "5px",
+    transition: "0.2s",
+    fontSize: "13px"
+  },
+  dateInput: {
+    padding: "5px",
+    borderRadius: "5px",
+    border: "1px solid var(--glass-border)",
+    background: "var(--glass-bg)",
+    color: "var(--text-main)",
+    outline: "none",
+    fontSize: "13px",
+  }
+};

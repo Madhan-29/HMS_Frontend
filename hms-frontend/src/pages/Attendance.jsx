@@ -60,86 +60,99 @@ export default function Attendance() {
   };
 
   return (
-    <div style={{ padding: "30px" }}>
-      <h2 style={{ textAlign: "center" }}>📌 Attendance</h2>
+    <div className="container">
+      <div className="card animate-slide-up" style={{ maxWidth: "800px" }}>
+        <button style={styles.backBtn} onClick={() => window.history.back()}>
+          ⬅ Back
+        </button>
 
-      <div style={{ textAlign: "center", marginBottom: "15px" }}>
-        <Link to="/dashboard" style={{ color: "#4cafef" }}>
-          ⬅ Back to Dashboard
-        </Link>
-      </div>
+        <h2 style={{ textAlign: "center", marginBottom: "20px" }}>📌 Attendance</h2>
 
-      {}
-      <div
-        style={{
-          maxWidth: "500px",
-          margin: "0 auto",
-          background: "rgba(255,255,255,0.06)",
-          padding: "20px",
-          borderRadius: "12px",
-        }}
-      >
-        <h3 style={{ textAlign: "center" }}>Mark Attendance</h3>
+        <div style={styles.formContainer}>
+          <h3 style={{ textAlign: "center", marginBottom: "15px" }}>Mark Attendance</h3>
 
-        <form onSubmit={handleMark}>
-          <input
-            className="inputBox"
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            disabled={marking}
-          />
+          <form onSubmit={handleMark} style={{ display: "flex", gap: "10px", flexDirection: "column" }}>
+            <input
+              className="inputBox"
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              disabled={marking}
+            />
 
-          <select
-            className="inputBox"
-            value={present ? "present" : "absent"}
-            onChange={(e) => setPresent(e.target.value === "present")}
-            disabled={marking}
-          >
-            <option value="present">Present ✅</option>
-            <option value="absent">Absent ❌</option>
-          </select>
-
-          <button className="btn" type="submit" disabled={marking}>
-            {marking ? "Marking..." : "Mark Attendance"}
-          </button>
-        </form>
-      </div>
-
-      {}
-      <h3 style={{ textAlign: "center", marginTop: "30px" }}>
-        My Attendance History
-      </h3>
-
-      {loading ? (
-        <p style={{ textAlign: "center", color: "lightgray" }}>Loading...</p>
-      ) : history.length === 0 ? (
-        <p style={{ textAlign: "center" }}>No attendance found</p>
-      ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-            gap: "18px",
-            marginTop: "20px",
-          }}
-        >
-          {history.map((a) => (
-            <div
-              key={a.id}
-              style={{
-                background: "rgba(255,255,255,0.06)",
-                padding: "18px",
-                borderRadius: "12px",
-              }}
+            <select
+              className="inputBox"
+              value={present ? "present" : "absent"}
+              onChange={(e) => setPresent(e.target.value === "present")}
+              disabled={marking}
             >
-              <h4>Date: {a.date}</h4>
-              <p>Status: {a.present ? "Present ✅" : "Absent ❌"}</p>
-              <p>Marked At: {a.markedAt}</p>
-            </div>
-          ))}
+              <option value="present">Present ✅</option>
+              <option value="absent">Absent ❌</option>
+            </select>
+
+            <button className="btn" type="submit" disabled={marking}>
+              {marking ? "Marking..." : "Mark Attendance"}
+            </button>
+          </form>
         </div>
-      )}
+
+        <h3 style={{ textAlign: "center", marginTop: "30px", marginBottom: "15px", color: "var(--text-main)" }}>
+          My Attendance History
+        </h3>
+
+        {loading ? (
+          <p style={{ textAlign: "center", color: "var(--text-muted)" }}>Loading...</p>
+        ) : history.length === 0 ? (
+          <p style={{ textAlign: "center", color: "var(--text-muted)" }}>No attendance found</p>
+        ) : (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+              gap: "18px",
+            }}
+          >
+            {history.map((a) => (
+              <div key={a.id} style={styles.historyCard}>
+                <h4 style={{ color: "var(--accent-blue)", marginBottom: "8px" }}>Date: {a.date}</h4>
+                <p style={{ color: "var(--text-main)", marginBottom: "5px" }}>Status: {a.present ? "Present ✅" : "Absent ❌"}</p>
+                <p style={{ color: "var(--text-muted)", fontSize: "12px" }}>Marked At: {a.markedAt}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
+
+const styles = {
+  backBtn: {
+    position: "absolute",
+    top: "25px",
+    left: "25px",
+    padding: "8px 15px",
+    borderRadius: "10px",
+    border: "none",
+    cursor: "pointer",
+    background: "var(--glass-bg)",
+    border: "1px solid var(--glass-border)",
+    color: "var(--text-main)",
+    transition: "all 0.3s ease",
+  },
+  formContainer: {
+    maxWidth: "400px",
+    margin: "0 auto",
+    background: "rgba(0,0,0,0.2)",
+    padding: "25px",
+    borderRadius: "16px",
+    border: "1px solid var(--glass-border)",
+  },
+  historyCard: {
+    background: "rgba(0,0,0,0.2)",
+    padding: "18px",
+    borderRadius: "12px",
+    border: "1px solid var(--glass-border)",
+    transition: "transform 0.2s",
+  },
+};

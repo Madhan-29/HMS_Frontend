@@ -116,133 +116,152 @@ export default function Rooms() {
   };
 
   return (
-    <div style={{ padding: "30px" }}>
-      <h2 style={{ textAlign: "center" }}>🏠 Hostel Rooms</h2>
+    <div className="container">
+      <div className="card animate-slide-up" style={{ maxWidth: "1000px" }}>
+        <button style={styles.backBtn} onClick={() => window.history.back()}>
+          ⬅ Back
+        </button>
 
-      <div style={{ textAlign: "center", marginBottom: "20px" }}>
-        <Link to="/dashboard" style={{ color: "#4cafef" }}>
-          ⬅ Back to Dashboard
-        </Link>
-      </div>
+        <h2 style={{ textAlign: "center", marginBottom: "20px" }}>🏠 Hostel Rooms</h2>
 
-      {}
-      <div style={{ maxWidth: "500px", margin: "0 auto", marginBottom: "20px" }}>
-        <input
-          className="inputBox"
-          type="text"
-          placeholder="🔍 Search by Room Number (ex: A101)"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </div>
-
-      {}
-      {isAdmin() && (
-        <div
-          style={{
-            maxWidth: "500px",
-            margin: "0 auto",
-            background: "rgba(255,255,255,0.06)",
-            padding: "20px",
-            borderRadius: "12px",
-            marginBottom: "25px",
-          }}
-        >
-          <h3 style={{ textAlign: "center" }}>➕ Add New Room (Admin)</h3>
-
-          <form onSubmit={handleAddRoom}>
-            <input
-              className="inputBox"
-              type="text"
-              placeholder="Room Number (ex: A101)"
-              value={roomNumber}
-              onChange={(e) => setRoomNumber(e.target.value)}
-              disabled={adding}
-            />
-
-            <input
-              className="inputBox"
-              type="number"
-              placeholder="Capacity (ex: 4)"
-              value={capacity}
-              onChange={(e) => setCapacity(e.target.value)}
-              disabled={adding}
-            />
-
-            <button className="btn" type="submit" disabled={adding}>
-              {adding ? "Adding..." : "Add Room"}
-            </button>
-          </form>
+        <div style={{ maxWidth: "500px", margin: "0 auto", marginBottom: "30px" }}>
+          <input
+            className="inputBox"
+            type="text"
+            placeholder="🔍 Search by Room Number (ex: A101)"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
         </div>
-      )}
 
-      {}
-      {loading ? (
-        <p style={{ textAlign: "center" }}>Loading rooms...</p>
-      ) : filteredRooms.length === 0 ? (
-        <p style={{ textAlign: "center" }}>No rooms found</p>
-      ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-            gap: "20px",
-            marginTop: "20px",
-          }}
-        >
-          {filteredRooms.map((room) => (
-            <div
-              key={room.id}
-              style={{
-                background: "rgba(255,255,255,0.06)",
-                borderRadius: "12px",
-                padding: "18px",
-                boxShadow: "0px 4px 12px rgba(0,0,0,0.4)",
-              }}
-            >
-              <h3 style={{ marginBottom: "10px" }}>Room: {room.roomNumber}</h3>
+        {isAdmin() && (
+          <div style={styles.adminFormContainer}>
+            <h3 style={{ textAlign: "center", marginBottom: "15px" }}>➕ Add New Room (Admin)</h3>
 
-              <p>👥 Capacity: {room.capacity}</p>
-              <p>✅ Occupied: {room.occupied}</p>
+            <form onSubmit={handleAddRoom} style={{ display: "flex", gap: "10px", flexDirection: "column" }}>
+              <input
+                className="inputBox"
+                type="text"
+                placeholder="Room Number (ex: A101)"
+                value={roomNumber}
+                onChange={(e) => setRoomNumber(e.target.value)}
+                disabled={adding}
+              />
 
-              <p>
-                {room.available ? (
-                  <span style={{ color: "lightgreen", fontWeight: "bold" }}>
-                    Available ✅
-                  </span>
-                ) : (
-                  <span style={{ color: "tomato", fontWeight: "bold" }}>
-                    Full ❌
-                  </span>
-                )}
-              </p>
+              <input
+                className="inputBox"
+                type="number"
+                placeholder="Capacity (ex: 4)"
+                value={capacity}
+                onChange={(e) => setCapacity(e.target.value)}
+                disabled={adding}
+              />
 
-              {}
-              {isAdmin() && (
-                <div style={{ marginTop: "12px" }}>
-                  <button
-                    className="btn"
-                    style={{ marginBottom: "10px" }}
-                    onClick={() => handleUpdateCapacity(room.id)}
-                    disabled={updatingId === room.id}
-                  >
-                    {updatingId === room.id ? "Updating..." : "Update Capacity"}
-                  </button>
+              <button className="btn" type="submit" disabled={adding}>
+                {adding ? "Adding..." : "Add Room"}
+              </button>
+            </form>
+          </div>
+        )}
 
-                  <button
-                    className="btn"
-                    style={{ background: "tomato" }}
-                    onClick={() => handleDeleteRoom(room.id)}
-                    disabled={deletingId === room.id}
-                  >
-                    {deletingId === room.id ? "Deleting..." : "Delete Room"}
-                  </button>
+        {loading ? (
+          <p style={{ textAlign: "center", color: "var(--text-muted)" }}>Loading rooms...</p>
+        ) : filteredRooms.length === 0 ? (
+          <p style={{ textAlign: "center", color: "var(--text-muted)" }}>No rooms found</p>
+        ) : (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+              gap: "20px",
+              marginTop: "20px",
+            }}
+          >
+            {filteredRooms.map((room) => (
+              <div key={room.id} style={styles.roomCard}>
+                <h3 style={{ marginBottom: "15px", color: "var(--accent-blue)" }}>Room: {room.roomNumber}</h3>
+
+                <p style={{ color: "var(--text-main)", margin: "5px 0" }}>👥 Capacity: {room.capacity}</p>
+                <p style={{ color: "var(--text-main)", margin: "5px 0" }}>👤 Occupied: {room.occupied}</p>
+
+                <div style={{ marginTop: "10px", marginBottom: "15px" }}>
+                  {room.available ? (
+                    <span style={{ ...styles.statusBadge, background: "var(--success)" }}>
+                      Available
+                    </span>
+                  ) : (
+                    <span style={{ ...styles.statusBadge, background: "var(--danger)" }}>
+                      Full
+                    </span>
+                  )}
                 </div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
+
+                {isAdmin() && (
+                  <div style={{ marginTop: "15px", display: "flex", gap: "10px" }}>
+                    <button
+                      className="btn"
+                      style={{ padding: "8px", fontSize: "13px" }}
+                      onClick={() => handleUpdateCapacity(room.id)}
+                      disabled={updatingId === room.id}
+                    >
+                      {updatingId === room.id ? "Updating..." : "Update Cap"}
+                    </button>
+
+                    <button
+                      className="btn"
+                      style={{ background: "var(--danger)", padding: "8px", fontSize: "13px", marginTop: "20px" }}
+                      onClick={() => handleDeleteRoom(room.id)}
+                      disabled={deletingId === room.id}
+                    >
+                      {deletingId === room.id ? "Deleting..." : "Delete"}
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
+
+const styles = {
+  backBtn: {
+    position: "absolute",
+    top: "25px",
+    left: "25px",
+    padding: "8px 15px",
+    borderRadius: "10px",
+    border: "none",
+    cursor: "pointer",
+    background: "var(--glass-bg)",
+    border: "1px solid var(--glass-border)",
+    color: "var(--text-main)",
+    transition: "all 0.3s ease",
+  },
+  adminFormContainer: {
+    maxWidth: "500px",
+    margin: "0 auto",
+    background: "rgba(0,0,0,0.2)",
+    padding: "25px",
+    borderRadius: "16px",
+    marginBottom: "30px",
+    border: "1px solid var(--glass-border)",
+  },
+  roomCard: {
+    background: "rgba(0,0,0,0.2)",
+    borderRadius: "16px",
+    padding: "20px",
+    border: "1px solid var(--glass-border)",
+    transition: "transform 0.2s",
+  },
+  statusBadge: {
+    padding: "6px 12px",
+    borderRadius: "20px",
+    color: "white",
+    fontSize: "12px",
+    fontWeight: "bold",
+    letterSpacing: "0.5px",
+  },
+};

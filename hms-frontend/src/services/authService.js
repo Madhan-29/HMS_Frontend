@@ -23,6 +23,11 @@ export const logoutUser = () => {
   localStorage.removeItem("roles");
 };
 
+export const resetPassword = async (email, newPassword) => {
+  const response = await api.post('/api/users/forgot-password', { email, newPassword });
+  return response.data;
+};
+
 export const isAdmin = () => {
   const roles = JSON.parse(localStorage.getItem("roles") || "[]");
   return roles.includes("ROLE_ADMIN");

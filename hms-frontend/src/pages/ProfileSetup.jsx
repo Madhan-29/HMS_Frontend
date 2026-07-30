@@ -35,7 +35,7 @@ export default function ProfileSetup() {
     <div className="container">
       <div className="card">
         <h2>📝 Complete Your Profile</h2>
-        <p style={{ color: "gray" }}>
+        <p style={{ color: "var(--text-muted)", textAlign: "center", marginBottom: "25px", fontSize: "14px" }}>
           Please complete your profile to continue
         </p>
 

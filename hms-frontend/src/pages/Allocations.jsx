@@ -83,6 +83,34 @@ export default function Allocations() {
     }
   };
 
+  const handleAutoAssign = async (e) => {
+    e.preventDefault();
+
+    if (!userEmail) {
+      alert("⚠️ Select a user first");
+      return;
+    }
+
+    try {
+      setAssigning(true);
+
+      const res = await api.post("/api/allocations/auto-assign", {
+        userEmail,
+      });
+
+      alert("✅ " + res.data);
+      setUserEmail("");
+      setRoomId("");
+
+      await refreshRoomsAndAllocations();
+    } catch (err) {
+      console.log(err);
+      alert("❌ Auto-allocation failed: " + (err.response?.data || "Error"));
+    } finally {
+      setAssigning(false);
+    }
+  };
+
   const handleVacate = async (allocationId) => {
     try {
       setVacatingId(allocationId);
@@ -100,112 +128,151 @@ export default function Allocations() {
   };
 
   return (
-    <div style={{ padding: "30px" }}>
-      <h2 style={{ textAlign: "center" }}>🏠 Room Allocations (Admin)</h2>
+    <div className="container">
+      <div className="card animate-slide-up" style={{ maxWidth: "1000px" }}>
+        <button style={styles.backBtn} onClick={() => window.history.back()}>
+          ⬅ Back
+        </button>
 
-      <div style={{ textAlign: "center", marginBottom: "15px" }}>
-        <Link to="/dashboard" style={{ color: "#4cafef" }}>
-          ⬅ Back to Dashboard
-        </Link>
-      </div>
+        <h2 style={{ textAlign: "center", marginBottom: "20px" }}>🏠 Room Allocations (Admin)</h2>
 
-      {loading && (
-        <p style={{ textAlign: "center", color: "lightgray" }}>
-          Loading allocation data...
-        </p>
-      )}
+        {loading && (
+          <p style={{ textAlign: "center", color: "var(--text-muted)", marginBottom: "20px" }}>
+            Loading allocation data...
+          </p>
+        )}
 
-      {}
-      <div
-        style={{
-          maxWidth: "550px",
-          margin: "0 auto",
-          background: "rgba(255,255,255,0.06)",
-          padding: "20px",
-          borderRadius: "12px",
-        }}
-      >
-        <h3 style={{ textAlign: "center" }}>Assign Room</h3>
+        <div style={styles.formContainer}>
+          <h3 style={{ textAlign: "center", marginBottom: "20px", color: "var(--text-main)" }}>Assign Room</h3>
 
-        <form onSubmit={handleAssign}>
-          <select
-            className="inputBox"
-            value={userEmail}
-            onChange={(e) => setUserEmail(e.target.value)}
-            disabled={assigning}
-          >
-            <option value="">Select User</option>
-            {users.map((u) => (
-              <option key={u.id} value={u.email}>
-                {u.email}
-              </option>
-            ))}
-          </select>
-
-          <select
-            className="inputBox"
-            value={roomId}
-            onChange={(e) => setRoomId(e.target.value)}
-            disabled={assigning}
-          >
-            <option value="">Select Room</option>
-            {rooms.map((r) => (
-              <option key={r.id} value={r.id}>
-                {r.roomNumber} (Occupied {r.occupied}/{r.capacity})
-              </option>
-            ))}
-          </select>
-
-          <button className="btn" type="submit" disabled={assigning}>
-            {assigning ? "Allocating..." : "Allocate"}
-          </button>
-        </form>
-      </div>
-
-      {}
-      <h3 style={{ textAlign: "center", marginTop: "30px" }}>
-        Active Allocations
-      </h3>
-
-      {allocations.length === 0 ? (
-        <p style={{ textAlign: "center" }}>No allocations found</p>
-      ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-            gap: "18px",
-            marginTop: "20px",
-          }}
-        >
-          {allocations.map((a) => (
-            <div
-              key={a.allocationId}
-              style={{
-                background: "rgba(255,255,255,0.06)",
-                padding: "18px",
-                borderRadius: "12px",
-              }}
+          <form onSubmit={handleAssign} style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            <select
+              className="inputBox"
+              value={userEmail}
+              onChange={(e) => setUserEmail(e.target.value)}
+              disabled={assigning}
             >
-              <h4>Room: {a.roomNumber}</h4>
-              <p>User: {a.userEmail}</p>
-              <p>
-                Occupied: {a.occupied}/{a.capacity}
-              </p>
-              <p>Status: {a.active ? "Active ✅" : "Inactive ❌"}</p>
+              <option value="">Select User</option>
+              {users.map((u) => (
+                <option key={u.id} value={u.email}>
+                  {u.email}
+                </option>
+              ))}
+            </select>
 
-              <button
-                className="btn"
-                style={{ background: "tomato" }}
-                onClick={() => handleVacate(a.allocationId)}
-                disabled={vacatingId === a.allocationId}
+            <select
+              className="inputBox"
+              value={roomId}
+              onChange={(e) => setRoomId(e.target.value)}
+              disabled={assigning}
+            >
+              <option value="">Select Room</option>
+              {rooms.map((r) => (
+                <option key={r.id} value={r.id}>
+                  {r.roomNumber} (Occupied {r.occupied}/{r.capacity})
+                </option>
+              ))}
+            </select>
+
+            <div style={{ display: "flex", gap: "15px", marginTop: "10px", flexWrap: "wrap" }}>
+              <button className="btn" type="submit" disabled={assigning} style={{ flex: 1 }}>
+                {assigning ? "Allocating..." : "Manual Allocate"}
+              </button>
+              <button 
+                className="btn" 
+                type="button" 
+                onClick={handleAutoAssign} 
+                disabled={assigning}
+                style={{ flex: 1, background: "linear-gradient(135deg, #667eea, #764ba2)" }}
               >
-                {vacatingId === a.allocationId ? "Vacating..." : "Vacate"}
+                {assigning ? "Allocating..." : "Auto Allocate"}
               </button>
             </div>
-          ))}
+          </form>
         </div>
-      )}
+
+        <h3 style={{ textAlign: "center", marginTop: "40px", marginBottom: "20px", color: "var(--text-main)" }}>
+          Active Allocations
+        </h3>
+
+        {allocations.length === 0 ? (
+          <p style={{ textAlign: "center", color: "var(--text-muted)" }}>No allocations found</p>
+        ) : (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+              gap: "20px",
+            }}
+          >
+            {allocations.map((a) => (
+              <div key={a.allocationId} style={styles.allocationCard}>
+                <h4 style={{ color: "var(--accent-blue)", marginBottom: "10px" }}>Room: {a.roomNumber}</h4>
+                <p style={{ color: "var(--text-main)", marginBottom: "5px", fontSize: "14px" }}>User: {a.userEmail}</p>
+                <p style={{ color: "var(--text-muted)", marginBottom: "10px", fontSize: "13px" }}>
+                  Occupied: {a.occupied}/{a.capacity}
+                </p>
+                
+                <div style={{ marginBottom: "15px" }}>
+                  {a.active ? (
+                     <span style={{ ...styles.statusBadge, background: "var(--success)" }}>Active</span>
+                  ) : (
+                     <span style={{ ...styles.statusBadge, background: "var(--danger)" }}>Inactive</span>
+                  )}
+                </div>
+
+                <button
+                  className="btn"
+                  style={{ background: "var(--danger)", padding: "8px", fontSize: "13px" }}
+                  onClick={() => handleVacate(a.allocationId)}
+                  disabled={vacatingId === a.allocationId}
+                >
+                  {vacatingId === a.allocationId ? "Vacating..." : "Vacate Room"}
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
+
+const styles = {
+  backBtn: {
+    position: "absolute",
+    top: "25px",
+    left: "25px",
+    padding: "8px 15px",
+    borderRadius: "10px",
+    border: "none",
+    cursor: "pointer",
+    background: "var(--glass-bg)",
+    border: "1px solid var(--glass-border)",
+    color: "var(--text-main)",
+    transition: "all 0.3s ease",
+  },
+  formContainer: {
+    maxWidth: "550px",
+    margin: "0 auto",
+    background: "rgba(0,0,0,0.2)",
+    padding: "25px",
+    borderRadius: "16px",
+    border: "1px solid var(--glass-border)",
+  },
+  allocationCard: {
+    background: "rgba(0,0,0,0.2)",
+    padding: "20px",
+    borderRadius: "16px",
+    border: "1px solid var(--glass-border)",
+    transition: "transform 0.2s",
+  },
+  statusBadge: {
+    padding: "4px 10px",
+    borderRadius: "20px",
+    color: "white",
+    fontSize: "12px",
+    fontWeight: "bold",
+    letterSpacing: "0.5px",
+  },
+};

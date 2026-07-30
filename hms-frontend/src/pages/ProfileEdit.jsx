@@ -35,12 +35,12 @@ export default function ProfileEdit() {
         <h2>✏️ Edit Profile</h2>
 
         <form onSubmit={handleUpdate}>
-          <input name="fullName" value={form.fullName} className="inputBox" onChange={handleChange} />
-          <input name="registerNumber" value={form.registerNumber} className="inputBox" onChange={handleChange} />
-          <input name="department" value={form.department} className="inputBox" onChange={handleChange} />
-          <input name="year" value={form.year} className="inputBox" onChange={handleChange} />
-          <input name="collegeName" value={form.collegeName} className="inputBox" onChange={handleChange} />
-          <input name="phone" value={form.phone} className="inputBox" onChange={handleChange} />
+          <input name="fullName" value={form.fullName || ""} className="inputBox" onChange={handleChange} placeholder="Full Name" />
+          <input name="registerNumber" value={form.registerNumber || ""} className="inputBox" onChange={handleChange} placeholder="Register Number" />
+          <input name="department" value={form.department || ""} className="inputBox" onChange={handleChange} placeholder="Department" />
+          <input name="year" value={form.year || ""} className="inputBox" onChange={handleChange} placeholder="Year" />
+          <input name="collegeName" value={form.collegeName || ""} className="inputBox" onChange={handleChange} placeholder="College Name" />
+          <input name="phone" value={form.phone || ""} className="inputBox" onChange={handleChange} placeholder="Phone Number" />
 
           <button className="btn">Update</button>
         </form>
